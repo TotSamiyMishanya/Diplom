@@ -1,0 +1,307 @@
+* {
+  box-sizing: border-box;
+  font-family: "Jeju Gothic", sans-serif;
+}
+
+body {
+  margin: 0;
+  background-color: #FFFAF8;
+  color: #271100;
+}
+
+
+
+header {
+  display: flex;
+  width: 100%;
+  height: 58px;
+  background-color: #3b2112;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.center_block {
+  width: 1000px;
+  max-width: calc(100% - 40px);
+  margin: 0 auto;
+}
+
+.content_header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 58px;
+  justify-content: space-between;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navigation a {
+  font-family: "Jeju Gothic", sans-serif;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 400;
+  transition: opacity 0.2s;
+}
+
+.navigation a:hover {
+  opacity: 0.75;
+}
+
+.auth_links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.auth_links a {
+  font-family: "Jeju Gothic", sans-serif;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 400;
+  transition: opacity 0.2s;
+}
+
+.auth_links a:hover {
+  opacity: 0.75;
+}
+
+
+
+main {
+  padding: 40px 0 60px;
+}
+
+h1 {
+  margin: 0 0 30px;
+  font-size: 34px;
+  font-weight: 400;
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 26px;
+  font-weight: 400;
+}
+
+section {
+  background-color: #ffffff;
+  border: 1px solid #351D09;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(39, 17, 0, 0.08);
+}
+
+hr {
+  display: none;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: 1px solid #351D09;
+  border-radius: 5px;
+  background-color: #ffffff;
+  color: #271100;
+  font-size: 16px;
+  outline: none;
+}
+
+textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #271100;
+}
+
+input:disabled,
+textarea:disabled {
+  background-color: #f0e9e5;
+  color: #6b5a4e;
+}
+
+button {
+  padding: 11px 18px;
+  border: 1px solid #351D09;
+  background-color: #351D09;
+  color: #ffffff;
+  border-radius: 5px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background-color: #ffffff;
+  color: #351D09;
+}
+
+#changePasswordBtn,
+#saveReviewBtn {
+  margin-top: 14px;
+}
+
+#msg,
+#passwordMsg,
+#requestsMsg,
+#reviewMsg {
+  margin-top: 12px;
+  font-size: 15px;
+}
+
+.request-card {
+  border: 1px solid #d2bcae;
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 16px;
+  background-color: #FFFAF8;
+}
+
+.request-card p {
+  margin: 8px 0;
+}
+
+.request-card button {
+  margin-top: 12px;
+  margin-right: 8px;
+}
+
+section label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 14px;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+section label input[type="radio"] {
+  width: auto;
+  margin: 0;
+}
+
+#reviewComment {
+  margin-top: 8px;
+}
+
+input[type="password"] {
+  font-family: Arial, Helvetica, sans-serif !important;
+  color: #271100 !important;
+  -webkit-text-fill-color: #271100 !important;
+  caret-color: #271100;
+  letter-spacing: 2px;
+  opacity: 1;
+}
+
+input[type="password"]::placeholder {
+  font-family: "Jeju Gothic", sans-serif;
+  letter-spacing: normal;
+  color: #8a7a70;
+  -webkit-text-fill-color: #8a7a70;
+}
+
+#passwordMsg.success,
+#requestsMsg.success,
+#reviewMsg.success {
+  padding: 10px 12px;
+  border-radius: 5px;
+  background-color: #edf7ed;
+  border: 1px solid #5d9b5d;
+  color: #245524;
+}
+
+#passwordMsg.error,
+#requestsMsg.error,
+#reviewMsg.error {
+  padding: 10px 12px;
+  border-radius: 5px;
+  background-color: #f9eeee;
+  border: 1px solid #a85b5b;
+  color: #7a1f1f;
+}
+
+
+
+@media (max-width: 768px) {
+  header {
+    height: auto;
+  }
+
+  .content_header {
+    height: auto;
+    min-height: 58px;
+    padding: 14px 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .navigation,
+  .auth_links {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .navigation a,
+  .auth_links a {
+    font-size: 17px;
+  }
+
+  main {
+    padding-top: 30px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  section {
+    padding: 18px;
+  }
+
+  .request-card button {
+    width: 100%;
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .center_block {
+    max-width: calc(100% - 24px);
+  }
+
+  .navigation a,
+  .auth_links a {
+    font-size: 15px;
+  }
+
+  section {
+    padding: 16px;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  section label {
+    margin-right: 8px;
+  }
+}

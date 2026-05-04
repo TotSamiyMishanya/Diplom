@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="profile.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/JejuGothic/JejuGothic.css" type="text/css"/>
+
+  <script src="profile.js" defer></script>
+
+  <title>Профиль пользователя</title>
+</head>
+<body>
+
+  <header>
+    <div class="center_block">
+      <div class="content_header">
+        <div class="navigation">
+          <a href="../main/main.html">Главная</a>
+          <a href="../catalog/catalog.html">Каталог</a>
+          <a href="../order/order.html">Экскурсия</a>
+          <a href="../reviews/reviews.html">Отзывы</a>
+          <a href="../contacts/contacts.html">Контакты</a>
+        </div>
+
+        <div class="auth_links">
+          <a href="../admin/admin.html" id="adminLink">Админ</a>
+          <a href="#" id="logoutBtn">Выход</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="center_block">
+
+      <h1>Личный кабинет</h1>
+
+      <p id="msg"></p>
+
+      <section>
+        <h2>Данные аккаунта</h2>
+
+        <p>
+          Логин:
+          <b id="loginText">Загрузка...</b>
+        </p>
+
+        <div>
+          <input id="newPassword" type="password" placeholder="Новый пароль">
+          <button id="changePasswordBtn">Изменить пароль</button>
+        </div>
+
+        <p id="passwordMsg"></p>
+      </section>
+
+      <hr>
+
+      <section>
+        <h2>Мои заявки на экскурсию</h2>
+
+        <p id="requestsMsg"></p>
+        
+        <div id="requestsList">
+          Загрузка заявок...
+        </div>
+      </section>
+
+      <hr>
+
+      <section>
+        <h2>Мой отзыв</h2>
+
+        <div>
+          <p>Оценка:</p>
+
+          <label>1 <input type="radio" name="rating" value="1"></label>
+          <label>2 <input type="radio" name="rating" value="2"></label>
+          <label>3 <input type="radio" name="rating" value="3"></label>
+          <label>4 <input type="radio" name="rating" value="4"></label>
+          <label>5 <input type="radio" name="rating" value="5"></label>
+        </div>
+
+        <div>
+          <textarea id="reviewComment" placeholder="Комментарий к отзыву"></textarea>
+        </div>
+
+        <button id="saveReviewBtn">Сохранить отзыв</button>
+
+        <p id="reviewMsg"></p>
+      </section>
+
+    </div>
+  </main>
+
+</body>
+</html>

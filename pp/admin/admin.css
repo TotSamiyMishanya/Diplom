@@ -1,0 +1,182 @@
+* {
+  box-sizing: border-box;
+  font-family: "Jeju Gothic", sans-serif;
+}
+
+body {
+  margin: 0;
+  background-color: #FFFAF8;
+  color: #271100;
+}
+
+
+
+header {
+  display: flex;
+  width: 100%;
+  height: 58px;
+  background-color: #3b2112;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.center_block {
+  width: 1000px;
+  max-width: calc(100% - 40px);
+  margin: 0 auto;
+}
+
+.content_header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 58px;
+  justify-content: space-between;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navigation a {
+  font-family: "Jeju Gothic", sans-serif;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 400;
+  transition: opacity 0.2s;
+}
+
+.navigation a:hover {
+  opacity: 0.75;
+}
+
+.auth_buttons {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.auth_btn {
+  font-family: "Jeju Gothic", sans-serif;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 400;
+  transition: opacity 0.2s;
+  border: none;
+  padding: 0;
+}
+
+.auth_btn:hover {
+  opacity: 0.75;
+}
+
+
+
+h2 {
+  margin-top: 40px;
+  margin-bottom: 20px;
+  font-size: 30px;
+  font-weight: 400;
+}
+
+#msg {
+  margin-top: 15px;
+  font-size: 16px;
+}
+
+.card {
+  background-color: #ffffff;
+  border: 1px solid #351D09;
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 16px;
+  line-height: 1.6;
+  box-shadow: 0 4px 16px rgba(39, 17, 0, 0.08);
+}
+
+.card b {
+  color: #271100;
+}
+
+.btns {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btns button {
+  padding: 10px 16px;
+  border: 1px solid #351D09;
+  background-color: #351D09;
+  color: #ffffff;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 0.2s;
+}
+
+.btns button:hover {
+  background-color: #ffffff;
+  color: #351D09;
+}
+
+
+
+@media (max-width: 768px) {
+  header {
+    height: auto;
+  }
+
+  .content_header {
+    height: auto;
+    min-height: 58px;
+    padding: 14px 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .navigation,
+  .auth_buttons {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .navigation a,
+  .auth_btn {
+    font-size: 17px;
+  }
+
+  h2 {
+    font-size: 24px;
+  }
+
+  .btns {
+    flex-direction: column;
+  }
+
+  .btns button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .center_block {
+    max-width: calc(100% - 24px);
+  }
+
+  .navigation a,
+  .auth_btn {
+    font-size: 15px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+}

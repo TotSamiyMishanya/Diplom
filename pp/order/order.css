@@ -1,0 +1,278 @@
+* {
+  box-sizing: border-box;
+  font-family: "Jeju Gothic", sans-serif;
+}
+
+body {
+  margin: 0;
+  background-color: #FFFAF8;
+  color: #271100;
+}
+
+
+
+header {
+  display: flex;
+  width: 100%;
+  height: 58px;
+  background-color: #3b2112;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.center_block {
+  width: 1000px;
+  max-width: calc(100% - 40px);
+  margin: 0 auto;
+}
+
+.content_header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 58px;
+  justify-content: space-between;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navigation a {
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 400;
+  transition: opacity 0.2s;
+}
+
+.navigation a:hover {
+  opacity: 0.75;
+}
+
+.auth_links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.auth_links a {
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 400;
+  transition: opacity 0.2s;
+}
+
+.auth_links a:hover {
+  opacity: 0.75;
+}
+
+
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.information {
+  width: 100%;
+  min-height: 560px;
+  background-image: url('../images/backgroundOrder.png');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.textOrder {
+  background-image: url('../images/infoOrder.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 613px;
+  max-width: calc(100% - 40px);
+  height: 228px;
+}
+
+
+
+.formOrder {
+  width: 1000px;
+  max-width: calc(100% - 40px);
+  background-color: #ffffff;
+  border: 1px solid #351D09;
+  border-radius: 8px;
+  margin: 28px auto 60px;
+  padding: 34px 40px 40px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  box-shadow: 0 4px 16px rgba(39, 17, 0, 0.08);
+}
+
+.headingOrder {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.headingOrder p {
+  color: #271100;
+  font-size: 28px;
+  margin: 0;
+}
+
+.orderForm {
+  width: 520px;
+  max-width: 100%;
+}
+
+.orderForm input,
+.orderForm textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border: 1px solid #351D09;
+  border-radius: 5px;
+  background-color: #ffffff;
+  color: #271100;
+  font-size: 16px;
+  outline: none;
+}
+
+.orderForm textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.orderForm input:focus,
+.orderForm textarea:focus {
+  border-color: #271100;
+}
+
+.orderForm button {
+  width: 100%;
+  margin-top: 18px;
+  padding: 13px;
+  border: 1px solid #351D09;
+  background-color: #351D09;
+  color: #ffffff;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.orderForm button:hover {
+  background-color: #ffffff;
+  color: #351D09;
+}
+
+.form-message {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 15px;
+  display: none;
+}
+
+
+.form-message.success {
+  display: block;
+  background-color: #edf7ed;
+  border: 1px solid #5d9b5d;
+  color: #245524;
+}
+
+.form-message.error {
+  display: block;
+  background-color: #f9eeee;
+  border: 1px solid #a85b5b;
+  color: #7a1f1f;
+}
+
+
+
+@media (max-width: 768px) {
+  header {
+    height: auto;
+  }
+
+  .content_header {
+    height: auto;
+    min-height: 58px;
+    padding: 14px 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .navigation,
+  .auth_links {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .navigation a,
+  .auth_links a {
+    font-size: 17px;
+  }
+
+  .information {
+    min-height: 430px;
+  }
+
+  .textOrder {
+    height: 180px;
+  }
+
+  .formOrder {
+    padding: 26px 22px 30px;
+    margin-top: 22px;
+  }
+
+  .headingOrder p {
+    font-size: 23px;
+  }
+}
+
+@media (max-width: 480px) {
+  .center_block {
+    max-width: calc(100% - 24px);
+  }
+
+  .navigation a,
+  .auth_links a {
+    font-size: 15px;
+  }
+
+  .information {
+    min-height: 340px;
+  }
+
+  .textOrder {
+    height: 140px;
+    max-width: calc(100% - 24px);
+  }
+
+  .formOrder {
+    max-width: calc(100% - 24px);
+    padding: 22px 16px 26px;
+  }
+
+  .headingOrder p {
+    font-size: 20px;
+  }
+
+  .orderForm input,
+  .orderForm textarea,
+  .orderForm button {
+    font-size: 15px;
+  }
+}

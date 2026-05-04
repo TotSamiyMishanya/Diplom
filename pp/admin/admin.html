@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="admin.css" />
+  <title>Админ-панель</title>
+</head>
+<body>
+  <header>
+    <div class="center_block">
+      <div class="content_header">
+        <div class="navigation">
+          <a href="../main/main.html">Главная</a>
+          <a href="../catalog/catalog.html">Каталог</a>
+          <a href="../order/order.html">Экскурсия</a>
+          <a href="../reviews/reviews.html">Отзывы</a>
+          <a href="../contacts/contacts.html">Контакты</a>
+        </div>
+
+        <div class="auth_buttons">
+          <a class="auth_btn" href="../profile/profile.html">Профиль</a>
+          <a class="auth_btn" href="#" id="logoutBtn">Выход</a>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div class="center_block">
+    <h2>Заявки на экскурсию</h2>
+    <div id="list"></div>
+    <p id="msg"></p>
+  </div>
+  <script>
+    async function checkAdmin() {
+      const me = await fetch('/api/auth/me').then(r=>r.json());
+      if (!me.user) { location.href = '/auth/login.html'; return null; }
+      if (me.user.role !== 'admin') { document.getElementById('msg').textContent = 'Доступ запрещён'; return null; }
+      return me.user;
+    }
+    async function load() {
+      const ok = await checkAdmin();
+      if (!ok) return;
+      const r = await fetch('/api/admin/requests');
+      const data = await r.json();
+      if (!r.ok) { document.getElementById('msg').textContent = data.error || 'Ошибка'; return; }
+      const list = document.getElementById('list');
+      list.innerHTML = '';
+      data.list.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+          <div><b>${item.fullName}</b> (${item.phone})</div>
+          <div>Дата: ${item.preferredDate}</div>
+          <div>Статус: <b>${item.status}</b></div>
+          <div>Пользователь: ${item.User?.login || '-'}</div>
+          <div>Комментарий: ${item.comment || '-'}</div>
+          <div class="btns">
+            <button data-id="${item.id}" data-st="approved">Одобрить</button>
+            <button data-id="${item.id}" data-st="rejected">Отклонить</button>
+            <button data-id="${item.id}" data-st="new">Сброс</button>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+      list.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          await fetch('/api/admin/requests/' + btn.dataset.id, {
+            method:'PATCH',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ status: btn.dataset.st })
+          });
+          load();
+        });
+      });
+    }
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+      e.preventDefault();
+      await fetch('/api/auth/logout', { method:'POST' });
+      location.href = '/main/main.html';
+    });
+    load();
+  </script>
+</body>
+</html>

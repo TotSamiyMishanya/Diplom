@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="auth.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/JejuGothic/JejuGothic.css" type="text/css"/>
+  <title>Вход</title>
+</head>
+<body>
+  <header>
+    <div class="center_block">
+      <div class="content_header">
+        <div class="navigation">
+          <a href="../main/main.html">Главная</a>
+          <a href="../catalog/catalog.html">Каталог</a>
+          <a href="../order/order.html">Экскурсия</a>
+          <a href="../reviews/reviews.html">Отзывы</a>
+          <a href="../contacts/contacts.html">Контакты</a>
+        </div>
+
+        <div class="auth_buttons">
+          <a class="auth_btn" href="./register.html">Регистрация</a>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div class="content">
+    <div class="card">
+      <h2>Вход</h2>
+      <input id="login" placeholder="Логин">
+      <input id="password" type="password" placeholder="Пароль">
+      <button id="btn">Войти</button>
+      <p id="msg"></p>
+      <p class="hint">Админ: admin / admin</p>
+    </div>
+  </div>
+<script>
+  fetch('/api/auth/me')
+    .then(r => r.json())
+    .then(data => {
+      if (data.user) {
+        location.href = '/profile/profile.html';
+      }
+    });
+
+  function showMessage(text) {
+    document.getElementById('msg').textContent = text;
+  }
+
+  document.getElementById('btn').addEventListener('click', async () => {
+    const login = document.getElementById('login').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    if (!login || !password) {
+      showMessage('Введите логин и пароль');
+      return;
+    }
+
+    const r = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ login, password })
+    });
+
+    const data = await r.json();
+
+    if (!r.ok) {
+      showMessage(data.error || 'Ошибка входа');
+      return;
+    }
+
+    location.href = '/main/main.html';
+  });
+</script>
+</body>
+</html>

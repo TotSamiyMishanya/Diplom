@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="catalog.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/JejuGothic/JejuGothic.css" type="text/css"/>
+    <title>Каталог мебели | Модели и варианты исполнения</title>
+</head>
+<body>
+    <header>
+        <div class="center_block">
+            <div class="content_header">
+                <div class="navigation">
+                    <a href="../main/main.html">Главная</a>
+                    <a href="../catalog/catalog.html">Каталог</a>
+                    <a href="../order/order.html">Экскурсия</a>
+                    <a href="../reviews/reviews.html">Отзывы</a>
+                    <a href="../contacts/contacts.html">Контакты</a>
+                </div>
+
+                <div class="auth_links">
+                    <a href="../auth/login.html" id="loginLink" class="nav-link">Вход</a>
+                    <a href="../auth/register.html" id="registerLink" class="nav-link">Регистрация</a>
+                    <a href="../profile/profile.html" id="profileLink" class="nav-link">Профиль</a>
+                    <a href="../admin/admin.html" id="adminLink" class="nav-link">Админ</a>
+                    <a href="#" id="logoutBtn" class="nav-link">Выход</a>
+                </div>
+<script>
+  fetch('/api/auth/me').then(r => r.json()).then(data => {
+    const user = data.user;
+
+    const loginLink = document.getElementById('loginLink');
+    const registerLink = document.getElementById('registerLink');
+    const profileLink = document.getElementById('profileLink');
+    const adminLink = document.getElementById('adminLink');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    if (!user) {
+      profileLink.style.display = 'none';
+      adminLink.style.display = 'none';
+      logoutBtn.style.display = 'none';
+      return;
+    }
+
+    loginLink.style.display = 'none';
+    registerLink.style.display = 'none';
+
+    if (user.role !== 'admin') {
+      adminLink.style.display = 'none';
+    }
+
+    logoutBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await fetch('/api/auth/logout', { method: 'POST' });
+      location.href = '/main/main.html';
+    });
+  });
+</script>
+            </div>
+        </div>
+    </header>
+    <div class="content">
+        <div class="our_work">
+            <img src="../images/ourWork.svg">
+        </div>
+        <div class="center_block">
+            <div class="catalog">
+                <div class="catalog_left">
+                    <img src="../images/catalog1.png">
+                    <img src="../images/catalog3.png">
+                    <img src="../images/catalog5.png">
+                </div>
+                <div class="catalog_right">
+                    <img src="../images/catalog2.png">
+                    <img src="../images/catalog4.png">
+                    <img src="../images/catalog6.png">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,173 @@
+* {
+  box-sizing: border-box;
+  font-family: "Jeju Gothic", sans-serif;
+}
+
+body {
+  margin: 0;
+  background-color: #FFFAF8;
+  color: #271100;
+}
+
+
+
+header {
+  display: flex;
+  width: 100%;
+  height: 58px;
+  background-color: #3b2112;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.center_block {
+  width: 1000px;
+  max-width: calc(100% - 40px);
+  margin: 0 auto;
+}
+
+.content_header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 58px;
+  justify-content: space-between;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navigation a {
+  font-family: "Jeju Gothic", sans-serif;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 400;
+  transition: opacity 0.2s;
+}
+
+.navigation a:hover {
+  opacity: 0.75;
+}
+
+.auth_links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.auth_links a {
+  font-family: "Jeju Gothic", sans-serif;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 400;
+  transition: opacity 0.2s;
+}
+
+.auth_links a:hover {
+  opacity: 0.75;
+}
+
+
+
+main {
+  padding: 40px 0 60px;
+}
+
+h1 {
+  margin: 0 0 30px;
+  font-size: 34px;
+  font-weight: 400;
+}
+
+#msg {
+  margin-bottom: 16px;
+}
+
+#reviewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.review-card {
+  background-color: #ffffff;
+  border: 1px solid #351D09;
+  border-radius: 8px;
+  padding: 22px;
+  box-shadow: 0 4px 16px rgba(39, 17, 0, 0.08);
+}
+
+.review-card p {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.review-card p:first-child {
+  font-size: 20px;
+}
+
+.review-card hr {
+  display: none;
+}
+
+
+
+@media (max-width: 768px) {
+  header {
+    height: auto;
+  }
+
+  .content_header {
+    height: auto;
+    min-height: 58px;
+    padding: 14px 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .navigation,
+  .auth_links {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .navigation a,
+  .auth_links a {
+    font-size: 17px;
+  }
+
+  main {
+    padding-top: 30px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  .review-card {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .center_block {
+    max-width: calc(100% - 24px);
+  }
+
+  .navigation a,
+  .auth_links a {
+    font-size: 15px;
+  }
+
+  .review-card {
+    padding: 16px;
+  }
+}

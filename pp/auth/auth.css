@@ -1,0 +1,221 @@
+* {
+  box-sizing: border-box;
+  font-family: "Jeju Gothic", sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #FFFAF8;
+  color: #271100;
+}
+
+
+
+header {
+  display: flex;
+  width: 100%;
+  height: 58px;
+  background-color: #3b2112;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.center_block {
+  width: 1000px;
+  max-width: calc(100% - 40px);
+  margin: 0 auto;
+}
+
+.content_header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 58px;
+  justify-content: space-between;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navigation a {
+  font-family: "Jeju Gothic", sans-serif;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 400;
+  transition: opacity 0.2s;
+}
+
+.navigation a:hover {
+  opacity: 0.75;
+}
+
+.auth_buttons {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.auth_btn {
+  font-family: "Jeju Gothic", sans-serif;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 400;
+  transition: opacity 0.2s;
+  border: none;
+  padding: 0;
+}
+
+.auth_btn:hover {
+  opacity: 0.75;
+}
+
+
+
+.content {
+  min-height: calc(100vh - 58px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 20px;
+}
+
+.card {
+  width: 420px;
+  max-width: 100%;
+  background-color: #ffffff;
+  border: 1px solid #351D09;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 4px 16px rgba(39, 17, 0, 0.08);
+}
+
+.card h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 30px;
+  font-weight: 400;
+  text-align: center;
+}
+
+.card input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border: 1px solid #351D09;
+  border-radius: 5px;
+  background-color: #ffffff;
+  color: #271100;
+  font-size: 16px;
+  outline: none;
+}
+
+.card input:focus {
+  border-color: #271100;
+}
+
+.card button {
+  width: 100%;
+  margin-top: 18px;
+  padding: 12px;
+  border: 1px solid #351D09;
+  background-color: #351D09;
+  color: #ffffff;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.card button:hover {
+  background-color: #ffffff;
+  color: #351D09;
+}
+
+#msg {
+  margin-top: 14px;
+  text-align: center;
+  color: #7a1f1f;
+}
+
+.hint {
+  margin-top: 18px;
+  font-size: 13px;
+  opacity: 0.7;
+  text-align: center;
+}
+
+.card input[type="password"] {
+  font-family: Arial, Helvetica, sans-serif !important;
+  color: #271100 !important;
+  -webkit-text-fill-color: #271100 !important;
+  caret-color: #271100;
+  letter-spacing: 2px;
+  opacity: 1;
+}
+
+.card input[type="password"]::placeholder {
+  font-family: "Jeju Gothic", sans-serif;
+  letter-spacing: normal;
+  color: #8a7a70;
+  -webkit-text-fill-color: #8a7a70;
+}
+
+
+
+@media (max-width: 768px) {
+  header {
+    height: auto;
+  }
+
+  .content_header {
+    height: auto;
+    min-height: 58px;
+    padding: 14px 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .navigation,
+  .auth_buttons {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .navigation a,
+  .auth_btn {
+    font-size: 17px;
+  }
+
+  .content {
+    align-items: flex-start;
+    padding-top: 35px;
+  }
+
+  .card h2 {
+    font-size: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .center_block {
+    max-width: calc(100% - 24px);
+  }
+
+  .navigation a,
+  .auth_btn {
+    font-size: 15px;
+  }
+
+  .card {
+    padding: 22px 16px;
+  }
+}

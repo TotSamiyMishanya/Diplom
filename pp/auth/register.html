@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="auth.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/JejuGothic/JejuGothic.css" type="text/css"/>
+  <title>Регистрация</title>
+</head>
+<body>
+  <header>
+    <div class="center_block">
+      <div class="content_header">
+        <div class="navigation">
+          <a href="../main/main.html">Главная</a>
+          <a href="../catalog/catalog.html">Каталог</a>
+          <a href="../order/order.html">Экскурсия</a>
+          <a href="../reviews/reviews.html">Отзывы</a>
+          <a href="../contacts/contacts.html">Контакты</a>
+        </div>
+
+        <div class="auth_buttons">
+          <a class="auth_btn" href="./login.html">Вход</a>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div class="content">
+    <div class="card">
+      <h2>Регистрация</h2>
+      <input id="login" placeholder="Логин">
+      <input id="password" type="password" placeholder="Пароль">
+      <button id="btn">Создать аккаунт</button>
+      <p id="msg"></p>
+    </div>
+  </div>
+<script>
+  fetch('/api/auth/me')
+    .then(r => r.json())
+    .then(data => {
+      if (data.user) {
+        location.href = '/profile/profile.html';
+      }
+    });
+
+  function showMessage(text) {
+    document.getElementById('msg').textContent = text;
+  }
+
+  function validateRegisterForm(login, password) {
+    if (!login) {
+      return 'Введите логин';
+    }
+
+    if (login.length < 3) {
+      return 'Логин должен быть не короче 3 символов';
+    }
+
+    if (login.length > 20) {
+      return 'Логин должен быть не длиннее 20 символов';
+    }
+
+    if (!/^[a-zA-Z0-9_]+$/.test(login)) {
+      return 'Логин может содержать только английские буквы, цифры и знак _';
+    }
+
+    if (!password) {
+      return 'Введите пароль';
+    }
+
+    if (password.length < 6) {
+      return 'Пароль должен быть не короче 6 символов';
+    }
+
+    if (password.length > 50) {
+      return 'Пароль должен быть не длиннее 50 символов';
+    }
+
+    return null;
+  }
+
+  document.getElementById('btn').addEventListener('click', async () => {
+    const login = document.getElementById('login').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    const error = validateRegisterForm(login, password);
+
+    if (error) {
+      showMessage(error);
+      return;
+    }
+
+    const r = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ login, password })
+    });
+
+    const data = await r.json();
+
+    if (!r.ok) {
+      showMessage(data.error || 'Ошибка регистрации');
+      return;
+    }
+
+    location.href = '/main/main.html';
+  });
+</script>
+</body>
+</html>
