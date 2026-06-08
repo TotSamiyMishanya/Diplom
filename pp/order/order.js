@@ -1,15 +1,22 @@
 window.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('sendReq');
   const msg = document.getElementById('msg');
-  const dateInput = document.getElementById('preferredDate');
+  const requestType = document.getElementById('requestType');
+  const customTypeBlock = document.getElementById('customTypeBlock');
+  const customTypeInput = document.getElementById('customType');
 
   if (!btn) return;
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  customTypeBlock.style.display = 'none';
 
-  const todayIso = today.toISOString().split('T')[0];
-  dateInput.min = todayIso;
+  requestType.addEventListener('change', () => {
+    if (requestType.value === 'other') {
+      customTypeBlock.style.display = 'block';
+    } else {
+      customTypeBlock.style.display = 'none';
+      customTypeInput.value = '';
+    }
+  });
 
   function showMessage(text, type) {
     msg.textContent = text;
@@ -18,60 +25,45 @@ window.addEventListener('DOMContentLoaded', () => {
     msg.classList.add(type);
   }
 
-  function convertDateToRuFormat(value) {
-    const parts = value.split('-');
-
-    if (parts.length !== 3) {
-      return '';
-    }
-
-    const year = parts[0];
-    const month = parts[1];
-    const day = parts[2];
-
-    return `${day}.${month}.${year}`;
-  }
-
-  function validateForm(fullName, phone, preferredDate, comment) {
+  function validateForm(fullName, phone, type, customType, comment) {
     if (!fullName) {
       return 'Введите ФИО';
     }
-
     if (fullName.length < 5) {
       return 'ФИО должно быть не короче 5 символов';
     }
-
     if (fullName.length > 80) {
       return 'ФИО должно быть не длиннее 80 символов';
     }
-
     if (!/^[а-яА-ЯёЁa-zA-Z\s-]+$/.test(fullName)) {
       return 'ФИО может содержать только буквы, пробелы и дефис';
     }
-
     if (!phone) {
       return 'Введите телефон';
     }
-
     if (!/^8\d{10}$/.test(phone)) {
       return 'Введите номер телефона в формате 8XXXXXXXXXX';
     }
-
-    if (!preferredDate) {
-      return 'Выберите желаемую дату';
+    if (!type) {
+      return 'Выберите тип заявки';
     }
-
-    const selectedDate = new Date(preferredDate);
-    selectedDate.setHours(0, 0, 0, 0);
-
-    if (selectedDate < today) {
-      return 'Дата экскурсии не может быть в прошлом';
+    if (!['excursion', 'measurement', 'other'].includes(type)) {
+      return 'Некорректный тип заявки';
     }
-
+    if (type === 'other') {
+      if (!customType) {
+        return 'Укажите название заявки';
+      }
+      if (customType.length < 3) {
+        return 'Название заявки должно быть не короче 3 символов';
+      }
+      if (customType.length > 80) {
+        return 'Название заявки должно быть не длиннее 80 символов';
+      }
+    }
     if (comment.length > 500) {
       return 'Комментарий должен быть не длиннее 500 символов';
     }
-
     return null;
   }
 
@@ -80,41 +72,44 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const fullName = document.getElementById('fullName').value.trim();
     const phone = document.getElementById('phone').value.trim();
-    const preferredDateValue = document.getElementById('preferredDate').value;
+    const type = document.getElementById('requestType').value;
+    const customType = document.getElementById('customType').value.trim();
     const comment = document.getElementById('comment').value.trim();
 
-    const validationError = validateForm(fullName, phone, preferredDateValue, comment);
+    const validationError = validateForm(fullName, phone, type, customType, comment);
 
     if (validationError) {
       showMessage(validationError, 'error');
       return;
     }
 
-    const preferredDate = convertDateToRuFormat(preferredDateValue);
-
     const r = await fetch('/api/excursions/request', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName, phone, preferredDate, comment })
+      body: JSON.stringify({
+        fullName,
+        phone,
+        type,
+        customType,
+        comment
+      })
     });
 
     const data = await r.json();
 
     if (!r.ok) {
-      if (r.status === 401) {
-        showMessage('Сначала войдите в аккаунт.', 'error');
-        return;
-      }
-
-      showMessage(data.error || 'Ошибка отправки заявки', 'error');
+      showMessage(data.error || 'Ошибка отправки обращения', 'error');
       return;
     }
 
-    showMessage('Заявка успешно отправлена!', 'success');
+    showMessage('Обращение успешно отправлено!', 'success');
 
     document.getElementById('fullName').value = '';
     document.getElementById('phone').value = '';
-    document.getElementById('preferredDate').value = '';
+    document.getElementById('requestType').value = '';
+    document.getElementById('customType').value = '';
     document.getElementById('comment').value = '';
+
+    customTypeBlock.style.display = 'none';
   });
 });

@@ -39,13 +39,25 @@
 
       <p id="msg"></p>
 
-      <section>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="accountTab">Данные аккаунта</button>
+        <button class="tab-btn" data-tab="securityTab">Безопасность</button>
+        <button class="tab-btn" data-tab="requestsTab">Мои обращения</button>
+        <button class="tab-btn" data-tab="ordersTab">История заказов</button>
+        <button class="tab-btn" data-tab="reviewTab">Отзыв</button>
+      </div>
+
+      <section id="accountTab" class="profile-tab-panel active">
         <h2>Данные аккаунта</h2>
 
         <p>
           Логин:
           <b id="loginText">Загрузка...</b>
         </p>
+      </section>
+
+      <section id="securityTab" class="profile-tab-panel">
+        <h2>Безопасность</h2>
 
         <div>
           <input id="newPassword" type="password" placeholder="Новый пароль">
@@ -55,21 +67,25 @@
         <p id="passwordMsg"></p>
       </section>
 
-      <hr>
-
-      <section>
-        <h2>Мои заявки на экскурсию</h2>
+      <section id="requestsTab" class="profile-tab-panel">
+        <h2>Мои обращения</h2>
 
         <p id="requestsMsg"></p>
-        
+
         <div id="requestsList">
-          Загрузка заявок...
+          Загрузка обращений...
         </div>
       </section>
 
-      <hr>
+      <section id="ordersTab" class="profile-tab-panel">
+        <h2>История заказов</h2>
 
-      <section>
+        <div id="ordersList">
+          Загрузка истории заказов...
+        </div>
+      </section>
+
+      <section id="reviewTab" class="profile-tab-panel">
         <h2>Мой отзыв</h2>
 
         <div>

@@ -234,7 +234,105 @@ input[type="password"]::placeholder {
   color: #7a1f1f;
 }
 
+.request-card select {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: 1px solid #351D09;
+  border-radius: 5px;
+  background-color: #ffffff;
+  color: #271100;
+  font-size: 16px;
+  outline: none;
+}
 
+.request-card select:focus {
+  border-color: #271100;
+}
+
+.custom-type-block {
+  margin-top: 4px;
+}
+
+.order-card {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  border: 1px solid #d2bcae;
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 16px;
+  background-color: #FFFAF8;
+}
+
+.order-image {
+  width: 180px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #d2bcae;
+}
+
+.order-info p {
+  margin: 8px 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.tab-btn {
+  padding: 11px 18px;
+  border: 1px solid #351D09;
+  background-color: #ffffff;
+  color: #351D09;
+  border-radius: 5px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.tab-btn:hover {
+  background-color: #f4ebe5;
+}
+
+.tab-btn.active {
+  background-color: #351D09;
+  color: #ffffff;
+}
+
+.profile-tab-panel {
+  display: none;
+}
+
+.profile-tab-panel.active {
+  display: block;
+}
+
+@media (max-width: 480px) {
+  .tabs {
+    flex-direction: column;
+  }
+
+  .tab-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .order-card {
+    flex-direction: column;
+  }
+
+  .order-image {
+    width: 100%;
+    height: auto;
+    max-height: 220px;
+  }
+}
 
 @media (max-width: 768px) {
   header {

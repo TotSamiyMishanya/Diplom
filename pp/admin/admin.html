@@ -7,6 +7,7 @@
   <title>Админ-панель</title>
 </head>
 <body>
+
   <header>
     <div class="center_block">
       <div class="content_header">
@@ -25,60 +26,370 @@
       </div>
     </div>
   </header>
-  <div class="center_block">
-    <h2>Заявки на экскурсию</h2>
-    <div id="list"></div>
-    <p id="msg"></p>
-  </div>
+
+  <main>
+    <div class="center_block">
+
+      <h1>Админ-панель</h1>
+      <p id="msg"></p>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="ordersAdminTab">История заказов</button>
+        <button class="tab-btn" data-tab="excursionAdminTab">Заявки на экскурсию</button>
+        <button class="tab-btn" data-tab="measurementAdminTab">Заявки на замеры</button>
+        <button class="tab-btn" data-tab="otherAdminTab">Другие обращения</button>
+      </div>
+
+      <section id="ordersAdminTab" class="admin-section admin-tab-panel active">
+        <h2>История заказов пользователей</h2>
+
+        <p id="ordersMsg"></p>
+
+        <div class="admin-form">
+          <input id="orderLogin" placeholder="Логин пользователя">
+          <input id="orderImagePath" placeholder="Путь к фото, например /images/catalog1.png">
+          <input id="orderAmount" type="number" step="0.01" placeholder="Сумма заказа">
+
+          <label class="field-label" for="orderDate">Дата заказа</label>
+          <input id="orderDate" type="date">
+
+          <label class="field-label" for="deliveryDate">Дата отдачи заказчику</label>
+          <input id="deliveryDate" type="date">
+
+          <button id="addOrderBtn">Добавить заказ</button>
+        </div>
+
+        <div id="ordersList"></div>
+      </section>
+
+      <section id="excursionAdminTab" class="admin-section admin-tab-panel">
+        <h2>Заявки на экскурсию</h2>
+        <div id="excursionRequestsList"></div>
+      </section>
+
+      <section id="measurementAdminTab" class="admin-section admin-tab-panel">
+        <h2>Заявки на замеры</h2>
+        <div id="measurementRequestsList"></div>
+      </section>
+
+      <section id="otherAdminTab" class="admin-section admin-tab-panel">
+        <h2>Другие обращения</h2>
+        <div id="otherRequestsList"></div>
+      </section>
+
+    </div>
+  </main>
+
   <script>
+    function escapeHtml(value) {
+      return String(value || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function getStatusText(status) {
+      if (status === 'new') return 'Новая';
+      if (status === 'approved') return 'Одобрена';
+      if (status === 'rejected') return 'Отклонена';
+      return status;
+    }
+
+    function getTypeText(type) {
+      if (type === 'excursion') return 'На экскурсию';
+      if (type === 'measurement') return 'На замеры';
+      if (type === 'other') return 'Другое';
+      return type;
+    }
+
+    function showMessage(id, text) {
+      document.getElementById(id).textContent = text;
+    }
+
+    function initAdminTabs() {
+      const buttons = document.querySelectorAll('.tab-btn');
+      const panels = document.querySelectorAll('.admin-tab-panel');
+
+      buttons.forEach(button => {
+        button.addEventListener('click', () => {
+          const tabId = button.dataset.tab;
+
+          buttons.forEach(btn => btn.classList.remove('active'));
+          panels.forEach(panel => panel.classList.remove('active'));
+
+          button.classList.add('active');
+
+          const activePanel = document.getElementById(tabId);
+          if (activePanel) {
+            activePanel.classList.add('active');
+          }
+        });
+      });
+    }
+
     async function checkAdmin() {
-      const me = await fetch('/api/auth/me').then(r=>r.json());
-      if (!me.user) { location.href = '/auth/login.html'; return null; }
-      if (me.user.role !== 'admin') { document.getElementById('msg').textContent = 'Доступ запрещён'; return null; }
+      const me = await fetch('/api/auth/me').then(r => r.json());
+
+      if (!me.user) {
+        location.href = '/auth/login.html';
+        return null;
+      }
+
+      if (me.user.role !== 'admin') {
+        showMessage('msg', 'Доступ запрещён');
+        return null;
+      }
+
       return me.user;
     }
-    async function load() {
-      const ok = await checkAdmin();
-      if (!ok) return;
-      const r = await fetch('/api/admin/requests');
-      const data = await r.json();
-      if (!r.ok) { document.getElementById('msg').textContent = data.error || 'Ошибка'; return; }
-      const list = document.getElementById('list');
+
+    async function loadOrders() {
+      const res = await fetch('/api/admin/orders');
+      const data = await res.json();
+
+      if (!res.ok) {
+        showMessage('ordersMsg', data.error || 'Ошибка загрузки заказов');
+        return;
+      }
+
+      renderOrders(data.orders);
+    }
+
+    function renderOrders(orders) {
+      const list = document.getElementById('ordersList');
       list.innerHTML = '';
-      data.list.forEach(item => {
+
+      if (!orders || orders.length === 0) {
+        list.textContent = 'История заказов пока пуста.';
+        return;
+      }
+
+      orders.forEach(order => {
+        const div = document.createElement('div');
+        div.className = 'card order-admin-card';
+
+        div.innerHTML = `
+          <p><b>Заказ №${order.id}</b></p>
+
+          ${order.imagePath ? `
+            <img class="admin-order-image" src="${escapeHtml(order.imagePath)}" alt="Фото заказа">
+          ` : ''}
+
+          <label class="field-label">Логин пользователя</label>
+          <input id="edit-login-${order.id}" value="${escapeHtml(order.User?.login || '')}">
+
+          <label class="field-label">Путь к фото</label>
+          <input id="edit-image-${order.id}" value="${escapeHtml(order.imagePath)}">
+
+          <label class="field-label">Сумма заказа</label>
+          <input id="edit-amount-${order.id}" type="number" step="0.01" value="${escapeHtml(order.amount)}">
+
+          <label class="field-label">Дата заказа</label>
+          <input id="edit-order-date-${order.id}" type="date" value="${escapeHtml(order.orderDate)}">
+
+          <label class="field-label">Дата отдачи заказчику</label>
+          <input id="edit-delivery-date-${order.id}" type="date" value="${escapeHtml(order.deliveryDate)}">
+
+          <div class="btns">
+            <button data-id="${order.id}" class="save-order-btn">Сохранить заказ</button>
+            <button data-id="${order.id}" class="delete-order-btn">Удалить заказ</button>
+          </div>
+        `;
+
+        list.appendChild(div);
+      });
+
+      document.querySelectorAll('.save-order-btn').forEach(btn => {
+        btn.addEventListener('click', () => updateOrder(btn.dataset.id));
+      });
+
+      document.querySelectorAll('.delete-order-btn').forEach(btn => {
+        btn.addEventListener('click', () => deleteOrder(btn.dataset.id));
+      });
+    }
+
+    async function addOrder() {
+      const login = document.getElementById('orderLogin').value.trim();
+      const imagePath = document.getElementById('orderImagePath').value.trim();
+      const amount = document.getElementById('orderAmount').value.trim();
+      const orderDate = document.getElementById('orderDate').value;
+      const deliveryDate = document.getElementById('deliveryDate').value;
+
+      const res = await fetch('/api/admin/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          login,
+          imagePath,
+          amount,
+          orderDate,
+          deliveryDate,
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showMessage('ordersMsg', data.error || 'Ошибка добавления заказа');
+        return;
+      }
+
+      document.getElementById('orderLogin').value = '';
+      document.getElementById('orderImagePath').value = '';
+      document.getElementById('orderAmount').value = '';
+      document.getElementById('orderDate').value = '';
+      document.getElementById('deliveryDate').value = '';
+
+      showMessage('ordersMsg', 'Заказ добавлен');
+      loadOrders();
+    }
+
+    async function updateOrder(id) {
+      const login = document.getElementById(`edit-login-${id}`).value.trim();
+      const imagePath = document.getElementById(`edit-image-${id}`).value.trim();
+      const amount = document.getElementById(`edit-amount-${id}`).value.trim();
+      const orderDate = document.getElementById(`edit-order-date-${id}`).value;
+      const deliveryDate = document.getElementById(`edit-delivery-date-${id}`).value;
+
+      const res = await fetch('/api/admin/orders/' + id, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          login,
+          imagePath,
+          amount,
+          orderDate,
+          deliveryDate,
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showMessage('ordersMsg', data.error || 'Ошибка сохранения заказа');
+        return;
+      }
+
+      showMessage('ordersMsg', 'Заказ сохранён');
+      loadOrders();
+    }
+
+    async function deleteOrder(id) {
+      const ok = confirm('Удалить этот заказ?');
+      if (!ok) return;
+
+      const res = await fetch('/api/admin/orders/' + id, {
+        method: 'DELETE'
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showMessage('ordersMsg', data.error || 'Ошибка удаления заказа');
+        return;
+      }
+
+      showMessage('ordersMsg', 'Заказ удалён');
+      loadOrders();
+    }
+
+    async function loadRequestsByType(type, listId) {
+      const res = await fetch('/api/admin/requests?type=' + type);
+      const data = await res.json();
+
+      if (!res.ok) {
+        document.getElementById(listId).textContent = data.error || 'Ошибка загрузки заявок';
+        return;
+      }
+
+      renderRequests(data.list, listId);
+    }
+
+    function renderRequests(requests, listId) {
+      const list = document.getElementById(listId);
+      list.innerHTML = '';
+
+      if (!requests || requests.length === 0) {
+        list.textContent = 'Заявок пока нет.';
+        return;
+      }
+
+      requests.forEach(item => {
         const div = document.createElement('div');
         div.className = 'card';
+
         div.innerHTML = `
-          <div><b>${item.fullName}</b> (${item.phone})</div>
-          <div>Дата: ${item.preferredDate}</div>
-          <div>Статус: <b>${item.status}</b></div>
-          <div>Пользователь: ${item.User?.login || '-'}</div>
-          <div>Комментарий: ${item.comment || '-'}</div>
+          <p><b>Обращение №${item.id}</b></p>
+          <p>Тип заявки: <b>${getTypeText(item.type)}</b></p>
+          <p>Название заявки: ${escapeHtml(item.customType || '-')}</p>
+          <p>ФИО: <b>${escapeHtml(item.fullName)}</b></p>
+          <p>Телефон: ${escapeHtml(item.phone)}</p>
+          <p>Пользователь: ${escapeHtml(item.User?.login || 'Гость')}</p>
+          <p>Дата отправки: ${new Date(item.createdAt).toLocaleString('ru-RU')}</p>
+          <p>Статус: <b>${getStatusText(item.status)}</b></p>
+          <p>Комментарий: ${escapeHtml(item.comment || '-')}</p>
+
           <div class="btns">
             <button data-id="${item.id}" data-st="approved">Одобрить</button>
             <button data-id="${item.id}" data-st="rejected">Отклонить</button>
             <button data-id="${item.id}" data-st="new">Сброс</button>
           </div>
         `;
+
         list.appendChild(div);
       });
+
       list.querySelectorAll('button').forEach(btn => {
         btn.addEventListener('click', async () => {
-          await fetch('/api/admin/requests/' + btn.dataset.id, {
-            method:'PATCH',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ status: btn.dataset.st })
-          });
-          load();
+          await updateRequestStatus(btn.dataset.id, btn.dataset.st);
         });
       });
     }
+
+    async function updateRequestStatus(id, status) {
+      const res = await fetch('/api/admin/requests/' + id, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showMessage('msg', data.error || 'Ошибка смены статуса');
+        return;
+      }
+
+      loadAllRequests();
+    }
+
+    function loadAllRequests() {
+      loadRequestsByType('excursion', 'excursionRequestsList');
+      loadRequestsByType('measurement', 'measurementRequestsList');
+      loadRequestsByType('other', 'otherRequestsList');
+    }
+
     document.getElementById('logoutBtn').addEventListener('click', async (e) => {
       e.preventDefault();
-      await fetch('/api/auth/logout', { method:'POST' });
+      await fetch('/api/auth/logout', { method: 'POST' });
       location.href = '/main/main.html';
     });
-    load();
+
+    document.getElementById('addOrderBtn').addEventListener('click', addOrder);
+
+    async function init() {
+      const admin = await checkAdmin();
+      if (!admin) return;
+
+      initAdminTabs();
+
+      loadOrders();
+      loadAllRequests();
+    }
+
+    init();
   </script>
 </body>
 </html>

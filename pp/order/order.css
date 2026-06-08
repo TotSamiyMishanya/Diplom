@@ -127,13 +127,22 @@ header {
   margin: 0;
 }
 
+.field-label {
+  display: block;
+  margin-top: 14px;
+  margin-bottom: -10px;
+  font-size: 15px;
+  color: #271100;
+}
+
 .orderForm {
   width: 520px;
   max-width: 100%;
 }
 
 .orderForm input,
-.orderForm textarea {
+.orderForm textarea,
+.orderForm select {
   width: 100%;
   padding: 12px;
   margin-top: 12px;
@@ -150,8 +159,13 @@ header {
   resize: vertical;
 }
 
+.custom-type-block {
+  margin-top: 4px;
+}
+
 .orderForm input:focus,
-.orderForm textarea:focus {
+.orderForm textarea:focus,
+.orderForm select:focus {
   border-color: #271100;
 }
 

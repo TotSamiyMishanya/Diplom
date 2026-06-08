@@ -67,14 +67,27 @@
         </div>
         <div class="center_block">
             <div class="formOrder">
-                <div class="headingOrder"><p>ОСТАВЬТЕ СВОЮ ЗАЯВКУ</p></div>
+                <div class="headingOrder"><p>ОСТАВЬТЕ СВОЮ ЗАЯВКУ ДЛЯ ОБРАЩЕНИЯ</p></div>
                 <div class="orderForm">
-                    <input id="fullName" placeholder="ФИО">
-                    <input id="phone" placeholder="Телефон: 8XXXXXXXXXX">
-                    <input id="preferredDate" type="date">
+                    <input id="fullName" placeholder="ФИО (обязательно)">
+                    <input id="phone" placeholder="Телефон: 89991234567 (обязательно)">
+
+                    <label class="field-label" for="requestType">Тип заявки*</label>
+                    <select id="requestType">
+                        <option value="">Выберите тип заявки</option>
+                        <option value="excursion">На экскурсию</option>
+                        <option value="measurement">На замеры</option>
+                        <option value="other">Другое</option>
+                    </select>
+
+                    <div id="customTypeBlock" class="custom-type-block">
+                        <label class="field-label" for="customType">Название заявки*</label>
+                        <input id="customType" placeholder="Например: консультация по кухне">
+                    </div>
+
                     <textarea id="comment" placeholder="Комментарий (необязательно)"></textarea>
 
-                    <button id="sendReq">Отправить заявку</button>
+                    <button id="sendReq">Отправить обращение</button>
 
                     <p id="msg" class="form-message"></p>
                 </div>

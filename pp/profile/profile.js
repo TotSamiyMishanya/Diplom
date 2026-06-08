@@ -16,6 +16,13 @@ function getStatusText(status) {
   return status;
 }
 
+function getTypeText(type) {
+  if (type === 'excursion') return 'На экскурсию';
+  if (type === 'measurement') return 'На замеры';
+  if (type === 'other') return 'Другое';
+  return type;
+}
+
 function showMessage(elementId, text, type = '') {
   const el = document.getElementById(elementId);
 
@@ -27,61 +34,16 @@ function showMessage(elementId, text, type = '') {
   }
 }
 
-function getTodayIso() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  return today.toISOString().split('T')[0];
-}
-
-function ruDateToIso(value) {
-  const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(String(value || ''));
-
-  if (!match) {
-    return '';
-  }
-
-  const day = match[1];
-  const month = match[2];
-  const year = match[3];
-
-  return `${year}-${month}-${day}`;
-}
-
-function isoDateToRu(value) {
-  const parts = String(value || '').split('-');
-
-  if (parts.length !== 3) {
-    return '';
-  }
-
-  const year = parts[0];
-  const month = parts[1];
-  const day = parts[2];
-
-  return `${day}.${month}.${year}`;
-}
-
 function validatePassword(password) {
-  if (!password) {
-    return 'Введите новый пароль';
-  }
-
-  if (password.length < 6) {
-    return 'Пароль должен быть не короче 6 символов';
-  }
-
-  if (password.length > 50) {
-    return 'Пароль должен быть не длиннее 50 символов';
-  }
+  if (!password) return 'Введите новый пароль';
+  if (password.length < 6) return 'Пароль должен быть не короче 6 символов';
+  if (password.length > 50) return 'Пароль должен быть не длиннее 50 символов';
 
   return null;
 }
 
-function validateRequestForm(fullName, phone, preferredDateIso, comment) {
-  if (!fullName) {
-    return 'Введите ФИО';
-  }
+function validateRequestForm(fullName, phone, type, customType, comment) {
+  if (!fullName) return 'Введите ФИО';
 
   if (fullName.length < 5) {
     return 'ФИО должно быть не короче 5 символов';
@@ -95,26 +57,28 @@ function validateRequestForm(fullName, phone, preferredDateIso, comment) {
     return 'ФИО может содержать только буквы, пробелы и дефис';
   }
 
-  if (!phone) {
-    return 'Введите телефон';
-  }
+  if (!phone) return 'Введите телефон';
 
   if (!/^8\d{10}$/.test(phone)) {
     return 'Введите номер телефона в формате 8XXXXXXXXXX';
   }
 
-  if (!preferredDateIso) {
-    return 'Выберите желаемую дату';
+  if (!type) return 'Выберите тип заявки';
+
+  if (!['excursion', 'measurement', 'other'].includes(type)) {
+    return 'Некорректный тип заявки';
   }
 
-  const selectedDate = new Date(preferredDateIso);
-  selectedDate.setHours(0, 0, 0, 0);
+  if (type === 'other') {
+    if (!customType) return 'Укажите название заявки';
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+    if (customType.length < 3) {
+      return 'Название заявки должно быть не короче 3 символов';
+    }
 
-  if (selectedDate < today) {
-    return 'Дата экскурсии не может быть в прошлом';
+    if (customType.length > 80) {
+      return 'Название заявки должно быть не длиннее 80 символов';
+    }
   }
 
   if (comment.length > 500) {
@@ -125,9 +89,7 @@ function validateRequestForm(fullName, phone, preferredDateIso, comment) {
 }
 
 function validateReviewForm(rating, comment) {
-  if (!rating) {
-    return 'Выберите оценку от 1 до 5';
-  }
+  if (!rating) return 'Выберите оценку от 1 до 5';
 
   if (Number(rating) < 1 || Number(rating) > 5) {
     return 'Оценка должна быть от 1 до 5';
@@ -138,6 +100,27 @@ function validateReviewForm(rating, comment) {
   }
 
   return null;
+}
+
+function initProfileTabs() {
+  const buttons = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.profile-tab-panel');
+
+  buttons.forEach(button => {
+    button.addEventListener('click', () => {
+      const tabId = button.dataset.tab;
+
+      buttons.forEach(btn => btn.classList.remove('active'));
+      panels.forEach(panel => panel.classList.remove('active'));
+
+      button.classList.add('active');
+
+      const activePanel = document.getElementById(tabId);
+      if (activePanel) {
+        activePanel.classList.add('active');
+      }
+    });
+  });
 }
 
 async function loadProfile() {
@@ -159,6 +142,7 @@ async function loadProfile() {
   }
 
   renderRequests(data.requests);
+  renderOrders(data.orders);
   renderReview(data.review);
 
   showMessage('msg', '');
@@ -169,20 +153,20 @@ function renderRequests(requests) {
   list.innerHTML = '';
 
   if (!requests || requests.length === 0) {
-    list.textContent = 'У вас пока нет заявок.';
+    list.textContent = 'У вас пока нет обращений.';
     return;
   }
 
   requests.forEach(item => {
     const canEdit = item.status === 'new';
-    const dateValue = ruDateToIso(item.preferredDate);
 
     const div = document.createElement('div');
     div.className = 'request-card';
 
     div.innerHTML = `
-      <p><b>Заявка №${item.id}</b></p>
+      <p><b>Обращение №${item.id}</b></p>
       <p>Статус: <b>${getStatusText(item.status)}</b></p>
+      <p>Дата отправки: ${new Date(item.createdAt).toLocaleString('ru-RU')}</p>
 
       <div>
         <input id="fullName-${item.id}" value="${escapeHtml(item.fullName)}" ${canEdit ? '' : 'disabled'}>
@@ -193,7 +177,17 @@ function renderRequests(requests) {
       </div>
 
       <div>
-        <input id="date-${item.id}" type="date" min="${getTodayIso()}" value="${escapeHtml(dateValue)}" ${canEdit ? '' : 'disabled'}>
+        <label class="field-label" for="type-${item.id}">Тип заявки</label>
+        <select id="type-${item.id}" ${canEdit ? '' : 'disabled'}>
+          <option value="excursion" ${item.type === 'excursion' ? 'selected' : ''}>На экскурсию</option>
+          <option value="measurement" ${item.type === 'measurement' ? 'selected' : ''}>На замеры</option>
+          <option value="other" ${item.type === 'other' ? 'selected' : ''}>Другое</option>
+        </select>
+      </div>
+
+      <div id="customTypeBlock-${item.id}" class="custom-type-block" style="${item.type === 'other' ? '' : 'display: none;'}">
+        <label class="field-label" for="customType-${item.id}">Название заявки</label>
+        <input id="customType-${item.id}" value="${escapeHtml(item.customType === '-' ? '' : item.customType)}" ${canEdit ? '' : 'disabled'}>
       </div>
 
       <div>
@@ -205,12 +199,29 @@ function renderRequests(requests) {
           <button data-id="${item.id}" class="save-request-btn">Сохранить</button>
           <button data-id="${item.id}" class="delete-request-btn">Удалить</button>
         ` : `
-          <p>Одобренные и отклонённые заявки нельзя редактировать.</p>
+          <p>Одобренные и отклонённые обращения нельзя редактировать.</p>
         `}
       </div>
     `;
 
     list.appendChild(div);
+  });
+
+  requests.forEach(item => {
+    const typeSelect = document.getElementById(`type-${item.id}`);
+    const customTypeBlock = document.getElementById(`customTypeBlock-${item.id}`);
+    const customTypeInput = document.getElementById(`customType-${item.id}`);
+
+    if (!typeSelect) return;
+
+    typeSelect.addEventListener('change', () => {
+      if (typeSelect.value === 'other') {
+        customTypeBlock.style.display = 'block';
+      } else {
+        customTypeBlock.style.display = 'none';
+        customTypeInput.value = '';
+      }
+    });
   });
 
   document.querySelectorAll('.save-request-btn').forEach(btn => {
@@ -219,6 +230,36 @@ function renderRequests(requests) {
 
   document.querySelectorAll('.delete-request-btn').forEach(btn => {
     btn.addEventListener('click', () => deleteRequest(btn.dataset.id));
+  });
+}
+
+function renderOrders(orders) {
+  const list = document.getElementById('ordersList');
+  list.innerHTML = '';
+
+  if (!orders || orders.length === 0) {
+    list.textContent = 'История заказов пока пуста.';
+    return;
+  }
+
+  orders.forEach(order => {
+    const div = document.createElement('div');
+    div.className = 'order-card';
+
+    div.innerHTML = `
+      ${order.imagePath ? `
+        <img class="order-image" src="${escapeHtml(order.imagePath)}" alt="Фото заказа">
+      ` : ''}
+
+      <div class="order-info">
+        <p><b>Заказ №${order.id}</b></p>
+        <p>Сумма заказа: <b>${escapeHtml(order.amount)} ₽</b></p>
+        <p>Дата заказа: ${escapeHtml(order.orderDate || '-')}</p>
+        <p>Дата отдачи заказчику: ${escapeHtml(order.deliveryDate || '-')}</p>
+      </div>
+    `;
+
+    list.appendChild(div);
   });
 }
 
@@ -264,17 +305,16 @@ async function changePassword() {
 async function updateRequest(id) {
   const fullName = document.getElementById(`fullName-${id}`).value.trim();
   const phone = document.getElementById(`phone-${id}`).value.trim();
-  const preferredDateIso = document.getElementById(`date-${id}`).value;
+  const type = document.getElementById(`type-${id}`).value;
+  const customType = document.getElementById(`customType-${id}`).value.trim();
   const comment = document.getElementById(`comment-${id}`).value.trim();
 
-  const validationError = validateRequestForm(fullName, phone, preferredDateIso, comment);
+  const validationError = validateRequestForm(fullName, phone, type, customType, comment);
 
   if (validationError) {
     showMessage('requestsMsg', validationError, 'error');
     return;
   }
-
-  const preferredDate = isoDateToRu(preferredDateIso);
 
   const res = await fetch('/api/profile/requests/' + id, {
     method: 'PATCH',
@@ -284,7 +324,8 @@ async function updateRequest(id) {
     body: JSON.stringify({
       fullName,
       phone,
-      preferredDate,
+      type,
+      customType,
       comment
     })
   });
@@ -292,17 +333,17 @@ async function updateRequest(id) {
   const data = await res.json();
 
   if (!res.ok) {
-    showMessage('requestsMsg', data.error || 'Ошибка сохранения заявки', 'error');
+    showMessage('requestsMsg', data.error || 'Ошибка сохранения обращения', 'error');
     return;
   }
 
   await loadProfile();
 
-  showMessage('requestsMsg', 'Заявка сохранена', 'success');
+  showMessage('requestsMsg', 'Обращение сохранено', 'success');
 }
 
 async function deleteRequest(id) {
-  const ok = confirm('Удалить эту заявку?');
+  const ok = confirm('Удалить это обращение?');
   if (!ok) return;
 
   const res = await fetch('/api/profile/requests/' + id, {
@@ -312,7 +353,7 @@ async function deleteRequest(id) {
   const data = await res.json();
 
   if (!res.ok) {
-    showMessage('requestsMsg', data.error || 'Ошибка удаления заявки', 'error');
+    showMessage('requestsMsg', data.error || 'Ошибка удаления обращения', 'error');
     return;
   }
 
@@ -361,4 +402,5 @@ document.getElementById('logoutBtn').addEventListener('click', async (e) => {
   location.href = '/main/main.html';
 });
 
+initProfileTabs();
 loadProfile();

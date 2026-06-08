@@ -1,35 +1,11 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
 
-const { User, ExcursionRequest, Review } = require('../models');
+const { User, Request, Review, CustomerOrder } = require('../models');
 const { requireAuth } = require('../middleware/auth');
 
 function normalizeText(value) {
   return String(value || '').trim();
-}
-
-function parseRuDate(value) {
-  const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value);
-
-  if (!match) {
-    return null;
-  }
-
-  const day = Number(match[1]);
-  const month = Number(match[2]);
-  const year = Number(match[3]);
-
-  const date = new Date(year, month - 1, day);
-
-  if (
-    date.getFullYear() !== year ||
-    date.getMonth() !== month - 1 ||
-    date.getDate() !== day
-  ) {
-    return null;
-  }
-
-  return date;
 }
 
 function validatePassword(password) {
@@ -48,7 +24,9 @@ function validatePassword(password) {
   return null;
 }
 
-function validateExcursionRequest(fullName, phone, preferredDate, comment) {
+function validateRequest(fullName, phone, type, customType, comment) {
+  const allowedTypes = ['excursion', 'measurement', 'other'];
+
   if (!fullName) {
     return 'Введите ФИО';
   }
@@ -73,21 +51,26 @@ function validateExcursionRequest(fullName, phone, preferredDate, comment) {
     return 'Введите номер телефона в формате 8XXXXXXXXXX';
   }
 
-  if (!preferredDate) {
-    return 'Введите желаемую дату';
+  if (!type) {
+    return 'Выберите тип заявки';
   }
 
-  const parsedDate = parseRuDate(preferredDate);
-
-  if (!parsedDate) {
-    return 'Дата должна быть в формате дд.мм.гггг';
+  if (!allowedTypes.includes(type)) {
+    return 'Некорректный тип заявки';
   }
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  if (type === 'other') {
+    if (!customType) {
+      return 'Укажите название заявки';
+    }
 
-  if (parsedDate < today) {
-    return 'Дата экскурсии не может быть в прошлом';
+    if (customType.length < 3) {
+      return 'Название заявки должно быть не короче 3 символов';
+    }
+
+    if (customType.length > 80) {
+      return 'Название заявки должно быть не длиннее 80 символов';
+    }
   }
 
   if (comment.length > 500) {
@@ -119,7 +102,7 @@ router.get('/', requireAuth, async (req, res) => {
       attributes: ['id', 'login', 'role']
     });
 
-    const requests = await ExcursionRequest.findAll({
+    const requests = await Request.findAll({
       where: { userId },
       order: [['createdAt', 'DESC']]
     });
@@ -128,13 +111,20 @@ router.get('/', requireAuth, async (req, res) => {
       where: { userId }
     });
 
+    const orders = await CustomerOrder.findAll({
+      where: { userId },
+      order: [['createdAt', 'DESC']]
+    });
+
     res.json({
       ok: true,
       user,
       requests,
-      review
+      review,
+      orders
     });
   } catch (e) {
+    console.error(e);
     res.status(500).json({ error: 'Серверная ошибка' });
   }
 });
@@ -158,6 +148,7 @@ router.patch('/password', requireAuth, async (req, res) => {
 
     res.json({ ok: true });
   } catch (e) {
+    console.error(e);
     res.status(500).json({ error: 'Серверная ошибка' });
   }
 });
@@ -166,16 +157,19 @@ router.patch('/requests/:id', requireAuth, async (req, res) => {
   try {
     const fullName = normalizeText(req.body.fullName);
     const phone = normalizeText(req.body.phone);
-    const preferredDate = normalizeText(req.body.preferredDate);
+    const type = normalizeText(req.body.type);
+    const rawCustomType = normalizeText(req.body.customType);
     const comment = normalizeText(req.body.comment);
 
-    const error = validateExcursionRequest(fullName, phone, preferredDate, comment);
+    const customType = type === 'other' ? rawCustomType : '-';
+
+    const error = validateRequest(fullName, phone, type, customType, comment);
 
     if (error) {
       return res.status(400).json({ error });
     }
 
-    const request = await ExcursionRequest.findOne({
+    const request = await Request.findOne({
       where: {
         id: req.params.id,
         userId: req.session.user.id
@@ -192,20 +186,22 @@ router.patch('/requests/:id', requireAuth, async (req, res) => {
 
     request.fullName = fullName;
     request.phone = phone;
-    request.preferredDate = preferredDate;
+    request.type = type;
+    request.customType = customType;
     request.comment = comment || null;
 
     await request.save();
 
     res.json({ ok: true, request });
   } catch (e) {
+    console.error(e);
     res.status(500).json({ error: 'Серверная ошибка' });
   }
 });
 
 router.delete('/requests/:id', requireAuth, async (req, res) => {
   try {
-    const request = await ExcursionRequest.findOne({
+    const request = await Request.findOne({
       where: {
         id: req.params.id,
         userId: req.session.user.id
@@ -224,6 +220,7 @@ router.delete('/requests/:id', requireAuth, async (req, res) => {
 
     res.json({ ok: true });
   } catch (e) {
+    console.error(e);
     res.status(500).json({ error: 'Серверная ошибка' });
   }
 });
@@ -259,6 +256,7 @@ router.post('/review', requireAuth, async (req, res) => {
 
     res.json({ ok: true, review });
   } catch (e) {
+    console.error(e);
     res.status(500).json({ error: 'Серверная ошибка' });
   }
 });
